@@ -1,6 +1,10 @@
 # node-docker-kubernetes
 Simple example of dockerising a node app, then using kubernetes
 
+## USefule resources:
+
+* dockerise a node app: https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
+
 ## Instructions
 
 Follow these steps:
@@ -13,22 +17,13 @@ Follow these steps:
 ### Dockerise
 
 * Install docker
-* create a Dockerfile:
-```
-FROM node:boron
-EXPOSE 8080
+* create a Dockerfile. See: https://github.com/thisisdavidbell/node-docker-kubernetes/blob/master/Dockerfile
 
-# Install dependencies
-COPY package.json .
-RUN npm install
-
-# Copy over files (ignoring those in .dockerignore)
-COPY . .
-
-EXPOSE 8080
-CMD [ "npm", "start" ]
-```
 * create .dockerignore
 * build docker image: `docker build -t <name> .
 * verify image exists: `docker images`
 * run the docker image: `docker run -p 8081:8080 -d <name>`
+* confirm docker image running: `docker ps`
+* if not, confirm it exited: `docker ps -a`
+* check app output: docker logs <container id from ps>
+* log into docker container: `docker exec -it <container id> /bin/bash`
