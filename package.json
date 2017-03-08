@@ -4,7 +4,8 @@
   "description": "Simple example of dockerising a node app, then using kubernetes",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node hello.js"
   },
   "repository": {
     "type": "git",

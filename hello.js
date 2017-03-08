@@ -1,3 +1,4 @@
+var PORT = 8080;
 var express = require('express');
 
 var helloapp = express();
@@ -11,6 +12,6 @@ helloapp.get('/hello', function(req, res) {
 
 });
 
-helloapp.listen(80, function() {
-  console.log('Housing app listening on port 80.')
+helloapp.listen(PORT, function() {
+  console.log('Housing app listening on port ' + PORT)
 })
