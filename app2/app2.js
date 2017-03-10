@@ -1,15 +1,15 @@
-var PORT = 8080;
+var PORT = 8081;
 var express = require('express');
 
-var helloapp = express();
-var msg = "Hello again from node app server ip: ";
+var app2 = express();
+var msg = "Im the second app, app2: ";
 var serverip = "";
 require('dns').lookup(require('os').hostname(), function (err, add, fam) {
   serverip = add;
   console.log(msg + serverip + ":" + PORT);
 });
 
-helloapp.get('/hello', function(req, res) {
+app2.get('/app2', function(req, res) {
 
 //    res.setHeader("Content-Type", "application/json");
 
@@ -17,6 +17,6 @@ helloapp.get('/hello', function(req, res) {
 
 });
 
-helloapp.listen(PORT, function() {
-  console.log('Hello app listening on port ' + PORT)
+app2.listen(PORT, function() {
+  console.log('App2 app listening on port ' + PORT)
 })

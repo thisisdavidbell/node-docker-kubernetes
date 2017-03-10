@@ -33,8 +33,8 @@ Follow these steps:
 * invoke node app, on redirected port (8081)
 * log into docker container: `docker exec -it <container id> /bin/bash`
 
-### 3. kubernetes with MiniKube
-
+### 3. run node app using kubernetes with MiniKube
+Note: this creats a single pod containing a single container - the node app running in docker.
 * install homebrew: https://brew.sh/
 * install MiniKube: Follow steps in section 'Create a Minikube cluster' here: https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/
 NOTE: if youhave VirtualBox installed already, you may be able to skip the xhyve steps and just use 'minikube start'
@@ -54,8 +54,36 @@ docker build -t hello-node:v1 .
 
 Note, the eval can be undone later with: `eval $(minikube docker-env -u).`
 
-* view running app: `kubectl service hello-node`
+* view running app: `kubectl service hello-node` and add `/hello` to URL
 * alternatively:
   * find ip from from: `kubectl ip`
   * find external port from : `kubectl get services`
   * open browser at: `ip:port/hello`
+
+* Remove deployment and exposed port:
+  * `kubectl get deployments`
+  * `kubectl get services`
+  * `kubectl delete deployment hello-node`
+  * `kubectl delete service hello-node`
+  * `kubectl get deployments`
+  * `kubectl get services`
+
+
+### 4. Run two containers in the one pods
+* create a yaml file describing the deployment: see https://github.com/thisisdavidbell/node-docker-kubernetes/blob/master/hello-deployment.yaml
+* create deployment from yaml: `kubectl create -f hello-deployment.yaml`
+* expose app with external port: `kubectl expose deployment hello-node --type=LoadBalancer`
+* confirm app running: `kubectl service hello-node` and add `/hello` to URL
+
+* create a second node app to run in same pod in new dir
+  * create Dockerfile for this app
+  * create docker image
+  * create new deployment and service just for this app to demo it works correctly in isolation
+
+* create new kubernetes deployment yaml file containing both containers: `multi-apps-deployment.yaml`
+* deploy: `kubectl create -f multi-apps-deployment.yaml`
+* confirm: `kubectl get deployments`
+* expose: `kubectl expose deployment multi-apps-node-from-yaml --type=LoadBalancer`
+* view exposed external ports: `kubectl get services`
+* Note the 2 mappings, different internal ports to different external ports
+* test with curl

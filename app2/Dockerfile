@@ -1,9 +1,9 @@
 FROM node:boron
-EXPOSE 8080
+EXPOSE 8081
 
 # create a working dir
-RUN mkdir /usr/hello
-WORKDIR /usr/hello
+RUN mkdir /usr/app2
+WORKDIR /usr/app2
 
 # Copy over files (ignoring those in .dockerignore)
 COPY . .
