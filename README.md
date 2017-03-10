@@ -90,11 +90,12 @@ Note, the eval can be undone later with: `eval $(minikube docker-env -u).`
 * *Note*: If you used the example node apps which print ip and port, note that the two containers share the same internal ip address, as they run in the same pod.
 
 ### 5. Communication between containers in the same pod
-Note: as the containers run with the same ipaddress, we can use localhost to communicat between them.
+Note: as the containers run with the same ip address, we can use localhost to communicate between them.
 * create new version of app2.js which calls localhost:8080/hello: see `app2-invoke.js`
 * add new command to package.json to kickoff new app: `package.json`
-* build new Dockerfile using this command: `Dokerfile-invoke`
+* build new Dockerfile using this command: `Dockerfile-invoke`
 * build v2 docker image of app2.js: `docker build --file Dockerfile-invoke -t app2-node:v2 .`
-* create new v2 yaml deployment file: `multi-app-deployment-v2.yaml`
-* remove old deployment and services
-* create new deployment: `kubectl create -f multi-apps-deployment-v2.yaml`
+* create new v2 yaml deployment file containing both containers: `multi-app-deployment-v2.yaml`
+* remove old deployment and services and create new deployment: `kubectl create -f multi-apps-deployment-v2.yaml`
+* Alternataively update the image of your deployment using: `kubectl set image ...`
+* verify new behaviour: `minikube service multi-app-node-from-yaml`
