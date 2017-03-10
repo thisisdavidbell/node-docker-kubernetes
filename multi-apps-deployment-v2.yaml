@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: multi-apps-node-from-yaml
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: multi-apps-node-from-yaml
+    spec:
+      containers:
+      - name: hello-node
+        image: hello-node:v1
+        ports:
+        - containerPort: 8080
+      - name: app2-node
+        image: app2-node:v2
+        ports:
+        - containerPort: 8081
