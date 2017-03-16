@@ -93,11 +93,11 @@ To do this, you will need the external ip address of the minikube cluster, and t
 * Remove deployment and service (i.e. the exposed port):
 
   * `kubectl get services`
-  * `kubectl delete service hello-node`
+  * `kubectl delete service <service name>`
   * `kubectl get services`
 
   * `kubectl get deployments`
-  * `kubectl delete deployment hello-node`
+  * `kubectl delete deployment <deployment name>`
   * `kubectl get deployments`
 
 ### 4. Run two containers in the one pods
@@ -105,37 +105,33 @@ To do this, you will need the external ip address of the minikube cluster, and t
   * create a yaml file describing the deployment: see [hello-deployment.yaml](hello-deployment.yaml), changing the image name and versionto match your docker image.
     * Note: in the example file, we have chosen to specify 2 replicas.
   * create deployment from yaml: `kubectl create -f hello-deployment.yaml`
-  * expose app with external port: `kubectl expose deployment hello-node --type=LoadBalancer`
+  * expose app with external port: `kubectl expose deployment <deployment name> --type=LoadBalancer`
+    * Note: the deployment name is specified in the yaml file
   * confirm app running: `kubectl service hello-node` and add `/hello` to URL
 
-* Create and deploy a second node app in same pod. The new node app calls the first ndoe app - the hello app.
+* Create and deploy a second node app in same pod. The new node app calls the first node app - the hello app.
 Note: communication between containers can be done on localhost, as containers in a pod share networking, or using a volume - shared disk space. Here we use localhost networking.
-  * create a new directory to contain the new app and associated docker files: see [/app2](/app2)`
-  * create node app which calls the hello app on localhost:8080/hello: see `app2-invoke.js`
+  * create a new directory to contain the new app and associated docker files: see [app2](app2)`
+  * create node app which calls the hello app on localhost:8080/hello, and exposes an API on port 8081: see [app2/app2-invoke.js](app2/app2-invoke.js)
   * create Dockerfile for this app: see [app2/Dockerfile](app2/Dockerfile)
-  * create docker image
-  * create new deployment and service just for this app to demo it works correctly in isolation
-
-* create new kubernetes deployment yaml file containing both containers: `multi-apps-deployment.yaml`
-* deploy: `kubectl create -f multi-apps-deployment.yaml`
+  * create docker image: `docker build -t <image name:version> .`
+   * create new kubernetes deployment yaml file containing both containers: [multi-container-deployment.yaml](multi-container-deployment.yaml). Note: update image names to match your hello and invoke app image names
+* deploy: `kubectl create -f multi-container-deployment.yaml`
 * confirm: `kubectl get deployments`
-* expose: `kubectl expose deployment multi-apps-node-from-yaml --type=LoadBalancer`
+* expose: `kubectl expose deployment <deployment name> --type=LoadBalancer --name=<service name>`
 * view exposed external ports: `kubectl get services`
-* Note the 2 mappings, different internal ports to different external ports
-* test with curl
-* *Note*: If you used the example node apps which print ip and port, note that the two containers share the same internal ip address, as they run in the same pod.
+  * Note: there are 2 port mappings, different internal ports to different external ports
+* Run: `docker ps`
+* test with curl:
+  * `curl <minikube cluster ip:service port/hello>`
+  * `curl <minikube cluster ip:service port/app2-invoke>`
+  * Alternatively test with `minikube service <service name>` and add `/hello` and `/app2-invoke`.
+  * *Note*: If you used the example node apps which print ip and port, note that the two containers share the same internal ip address, as they run in the same pod.
 
-### 5. Communication between containers in the same pod
-Note: as the containers run with the same ip address, we can use localhost to communicate between them.
-
-* add new command to package.json to kickoff new app: `package.json`
-* build new Dockerfile using this command: `Dockerfile-invoke`
-* build v2 docker image of app2.js: `docker build --file Dockerfile-invoke -t app2-node:v2 .`
-* create new v2 yaml deployment file containing both containers: `multi-app-deployment-v2.yaml`
-* remove old deployment and services and create new deployment: `kubectl create -f multi-apps-deployment-v2.yaml`
-* Alternataively update the image of your deployment using: `kubectl set image ...`
-* verify new behaviour: `minikube service multi-app-node-from-yaml`
-
+### Debugging
+Some debugging options:
+* Docker image
+  * create an instance of the docker image using `docker run` and use `docker exec` to log into the image and check the file system looks as expected, `ps -ef` shows the expected commands, and `curl localhost:<port>/<path>` works.
 
 ## Useful resources:
 This tutorial was built up using knowledge acquired by following these tutorials:

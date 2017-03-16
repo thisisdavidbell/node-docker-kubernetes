@@ -3,14 +3,14 @@ kind: Deployment
 metadata:
   name: hello-node-from-yaml
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
         app: hello-node
     spec:
       containers:
-      - name: hello-node
-        image: hello-node:v1
+      - name: hello-node-kube-docker-image-container
+        image: hello-node-kube-docker-image:v1
         ports:
         - containerPort: 8080

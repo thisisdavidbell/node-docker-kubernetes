@@ -19,7 +19,7 @@ request('http://localhost:8080/hello', function (error, response, body) {
    resp = body;
 });
 
-app2.get('/app2', function(req, res) {
+app2.get('/app2-invoke', function(req, res) {
 
 //    res.setHeader("Content-Type", "application/json");
 

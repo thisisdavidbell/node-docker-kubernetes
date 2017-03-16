@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app2.js",
-    "start-invoke": "node app2-invoke.js"
+    "start": "node app2-invoke.js"
   },
   "repository": {
     "type": "git",
