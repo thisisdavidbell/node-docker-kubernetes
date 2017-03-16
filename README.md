@@ -32,22 +32,28 @@ Note:
 * Create a Dockerfile. See: [Dockerfile](Dockerfile)
   * This file includes instructions that:
     * specify the base image to use, in this case the 'boron' version of the official node
+    * Specify which port the container uses
     * make a new directory to use for the app (optional) and set this as the working directory - where the CMD will be executed.
     * copy all local files to the working directory (excluding those in the .dockerignore file)
     * run `npm install` to install the app's dependencies from package.json
     * specify the command (CMD) that kicks off the application on this container
 * create .dockerignore, specifying any local files not required in the container. See: [.dockerignore](.dockerignore)
 * Build the docker image: `docker build -t <name> .`
+  * Note: you can use this same command to rebuild the image if you make changes to the Dockerfile or node app.
 * Verify image exists: `docker images`
-* Run the docker image: `docker run -p 8081:8080 -d <name>`
+* Run the docker image: `docker run -p 8081:8080 -d <name of image>`
   * Note for demonstration purposes we tell docker to make the app available externally on port 8081, linked to port 8080 on the docker container.
 * Confirm docker image running: `docker ps`
   * If not, confirm it exited: `docker ps -a`, and check your dockerfile and node app.
-* Check app output: docker logs <container id from ps>
-* Invoke node app, on redirected port (8081).
+* Check app output: `docker logs <container id from ps>`
+* Invoke node app, on redirected port (8081): `curl localhost:8081/hello`
   * Note: 8080 will not work outside the docker container.
 * Log into docker container: `docker exec -it <container id> /bin/bash`
-  * Note: `curl localhost:8080/hello` works, and `localhost:8081/hello` doesnt.
+  * Invoke the node app again
+    * Note: `curl localhost:8080/hello` works, and `localhost:8081/hello` doesnt.
+* Exit the docker container: `exit`
+* stop the docker container: `docker stop <container id>`
+* confirm it stopped: `docker ps`
 
 ### 3. run node app using kubernetes with MiniKube
 Note: this creats a single pod containing a single container - the node app running in docker.

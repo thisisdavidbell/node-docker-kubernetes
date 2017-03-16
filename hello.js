@@ -2,7 +2,7 @@ var PORT = 8080;
 var express = require('express');
 
 var helloapp = express();
-var msg = "Hello again from node app server ip: ";
+var msg = "Hello from node app server, ip: ";
 var serverip = "";
 require('dns').lookup(require('os').hostname(), function (err, add, fam) {
   serverip = add;
