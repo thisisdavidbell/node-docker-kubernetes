@@ -8,10 +8,7 @@ It covers the following capabilities:
 * Using Minikube to run a pod containing a single docker container in Kubernetes
 * Creating and running a pod with 2 containers in
 * Proving communication between the two containers
-
-ToDo:
-* Creating a health check for each container/pod
-* Demonstrating the auto-recover of containers/pods
+* Demonstrating the built in pod healthcheck
 
 ## Environment
 
@@ -130,7 +127,7 @@ Note: communication between containers can be done on localhost, as containers i
 * View Dashboard: `minikube dashboard`
   * Note: this command opens the Kubernetes dashboard for the Minikube cluster.
 
-### Healthchecks demonstration
+### Healthcheck demonstration
 
 By default kubernetes monitors pods, and restarts them if needed. Using 2 terminal windows follow these steps to confirm this:
 * In terminal window 1, call the externally exposed load balancera number of times to confirm the hello app is running and being balanced across both ips: `curl <minikube cluster ip>:<hello app exposed port>/hello`. You should see the reponse coming from 2 different ips.
