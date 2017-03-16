@@ -24,22 +24,30 @@ Note:
 
 * Install node.js
 * Create a simple node application, for example that returns 'Hello' on port 8080 using express: See: [hello.js](hello.js)
-* include a package.json with dependencies and a 'start' script. (docker will assume these exist and use them by default)
+* Ensure you create a package.json with dependencies and a 'start' script. See: [package.json](package.json)
 
 ### 2. Create Docker image
-*NOTE*: while this image will not be used in the Kubernetes part of this tutorial, it is useful to create and use a docker container as a learning exercise.
-* Install Docker for mac
-* create a Dockerfile. See: https://github.com/thisisdavidbell/node-docker-kubernetes/blob/master/Dockerfile
-
-* create .dockerignore
-* build docker image: `docker build -t <name> .`
-* verify image exists: `docker images`
-* run the docker image: `docker run -p 8081:8080 -d <name>`
-* confirm docker image running: `docker ps`
-* if not, confirm it exited: `docker ps -a`
-* check app output: docker logs <container id from ps>
-* invoke node app, on redirected port (8081)
-* log into docker container: `docker exec -it <container id> /bin/bash`
+*NOTE*: While this image will not be used in the Kubernetes part of this tutorial, it is useful to create and use a docker container as a learning exercise.
+* Install [https://docs.docker.com/docker-for-mac/install/](Docker for mac)
+* Create a Dockerfile. See: [Dockerfile](Dockerfile)
+  * This file includes instructions that:
+    * specify the base image to use, in this case the 'boron' version of the official node
+    * make a new directory to use for the app (optional) and set this as the working directory - where the CMD will be executed.
+    * copy all local files to the working directory (excluding those in the .dockerignore file)
+    * run `npm install` to install the app's dependencies from package.json
+    * specify the command (CMD) that kicks off the application on this container
+* create .dockerignore, specifying any local files not required in the container. See: [.dockerignore](.dockerignore)
+* Build the docker image: `docker build -t <name> .`
+* Verify image exists: `docker images`
+* Run the docker image: `docker run -p 8081:8080 -d <name>`
+  * Note for demonstration purposes we tell docker to make the app available externally on port 8081, linked to port 8080 on the docker container.
+* Confirm docker image running: `docker ps`
+  * If not, confirm it exited: `docker ps -a`, and check your dockerfile and node app.
+* Check app output: docker logs <container id from ps>
+* Invoke node app, on redirected port (8081).
+  * Note: 8080 will not work outside the docker container.
+* Log into docker container: `docker exec -it <container id> /bin/bash`
+  * Note: `curl localhost:8080/hello` works, and `localhost:8081/hello` doesnt.
 
 ### 3. run node app using kubernetes with MiniKube
 Note: this creats a single pod containing a single container - the node app running in docker.

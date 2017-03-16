@@ -6,7 +6,7 @@ var msg = "Hello again from node app server ip: ";
 var serverip = "";
 require('dns').lookup(require('os').hostname(), function (err, add, fam) {
   serverip = add;
-  console.log(msg + serverip + ":" + PORT);
+  //console.log(msg + serverip + ":" + PORT);
 });
 
 helloapp.get('/hello', function(req, res) {
