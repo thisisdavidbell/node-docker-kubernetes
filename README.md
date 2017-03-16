@@ -3,12 +3,11 @@ This tutorial provides a guided introduction to using docker and kubernetes, usi
 
 It covers the following capabilities:
 
-* Creating a simple node app
-* Creating a docker image
-* Using Minikube to run a pod containing a single docker container in Kubernetes
-* Creating and running a pod with 2 containers in
-* Proving communication between the two containers
-* Demonstrating the built in pod healthcheck
+* Creating a simple node.js app
+* Creating a docker image for the node.js app
+* Using Minikube to run a pod running the node.js app image, in Kubernetes
+* Creating and running 2 pods, each with 2 node.js containers which communicate inside the pod
+* Demonstrating the built in pod healthcheck and auto recovery
 
 ## Environment
 
