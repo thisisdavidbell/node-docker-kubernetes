@@ -28,7 +28,7 @@ Note:
 
 ### 2. Create Docker image
 *NOTE*: While this image will not be used in the Kubernetes part of this tutorial, it is useful to create and use a docker container as a learning exercise.
-* Install [https://docs.docker.com/docker-for-mac/install/](Docker for mac)
+* Install [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
 * Create a Dockerfile. See: [Dockerfile](Dockerfile)
   * This file includes instructions that:
     * specify the base image to use, in this case the 'boron' version of the official node
