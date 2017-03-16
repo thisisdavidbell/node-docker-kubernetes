@@ -1,21 +1,29 @@
-# node-docker-kubernetes
-Simple example of dockerising a node app, then using kubernetes
+# Tutorial: node-docker-kubernetes
+This tutorial provides a guided introduction to using docker and kubernetes, using a simple node application as an example.
 
-## Useful resources:
+It covers the following capabilities:
 
-* Dockerise a node app: https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
-* Minikube intro: https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/
+* Creating a simple node app
+* Creating a docker image
+* Using Minikube to run a pod containing a single docker container in Kubernetes
+* Creating and running a pod with 2 containers in
+* Proving communication between the two containers
 
+ToDo:
+* Running ultipl instances of each container/pod
+* Creating a health check for each container/pod
+* Demonstrating the auto-recover of containers/pods
 
-## Instructions
+## Environment
 
-Follow these steps:
-*Note*: These instructions were written and tested on OS X.
+Note:
+* These instructions were written and tested on OS X.
+* All installation requirements should be mentioned where needed.
 
 ### 1. Create node app
 
-* Install node
-* create a simple node application, for example that returns 'Hello' on port 8080 using express
+* Install node.js
+* Create a simple node application, for example that returns 'Hello' on port 8080 using express: See: [hello.js](hello.js)
 * include a package.json with dependencies and a 'start' script. (docker will assume these exist and use them by default)
 
 ### 2. Create Docker image
@@ -99,3 +107,9 @@ Note: as the containers run with the same ip address, we can use localhost to co
 * remove old deployment and services and create new deployment: `kubectl create -f multi-apps-deployment-v2.yaml`
 * Alternataively update the image of your deployment using: `kubectl set image ...`
 * verify new behaviour: `minikube service multi-app-node-from-yaml`
+
+
+## Useful resources:
+This tutorial was built up using knowledge acquired by following these tutorials:
+* Dockerise a node app: https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
+* Minikube intro: https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/
