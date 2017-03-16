@@ -10,7 +10,6 @@ It covers the following capabilities:
 * Proving communication between the two containers
 
 ToDo:
-* Running ultipl instances of each container/pod
 * Creating a health check for each container/pod
 * Demonstrating the auto-recover of containers/pods
 
@@ -130,8 +129,24 @@ Note: communication between containers can be done on localhost, as containers i
   * *Note*: If you used the example node apps which print ip and port, note that the two containers share the same internal ip address, as they run in the same pod.
 * View Dashboard: `minikube dashboard`
   * Note: this command opens the Kubernetes dashboard for the Minikube cluster.
-  
-### Debugging
+
+### Healthchecks demonstration
+
+By default kubernetes monitors pods, and restarts them if needed. Using 2 terminal windows follow these steps to confirm this:
+* In terminal window 1, call the externally exposed load balancera number of times to confirm the hello app is running and being balanced across both ips: `curl <minikube cluster ip>:<hello app exposed port>/hello`. You should see the reponse coming from 2 different ips.
+* In terminal window 2, Open the Kubernetes Dashboard: `minikube dashboard`
+* Click on `Pods` and confirm the number of restarts for each pod (probably 0).
+* Find the running docker containers: `docker ps`
+* Log into one of the hello containers: `docker exec -it <container id> /bin/bash`
+* Confirm the node app is running correctly: `curl localhost:8080/hello`
+* find the proc id for the node app: `ps -ef | grep node`
+* While repeatedly invoking the load balanced hello api in window 1, in window 2 kill the node process: `kill -9 <node pid>`. You will be kicked out of the container.
+* Continue to call the loadbalanced API in window 1. You may see a failed attempt to call the exposed hello API, but quickly you will see all calls come from the pod that you didn't break. After a few seconds calls will again be balanced across the 2 IPs.
+* Note: you can see exactly the same if you cal the load balanced app2-invoke API. The entire pod is recovered, so you won't find you are calling the app2-invoke API which is trying to talk to the broken hello API.
+* Refresh the Dashboard page and the restart count for the killed pod will be incremented by 1.
+The system has auto recovered with no additional work from you!
+
+### Debugging issues
 Some debugging options:
 * Docker image
   * create an instance of the docker image using `docker run` and use `docker exec` to log into the image and check the file system looks as expected, `ps -ef` shows the expected commands, and `curl localhost:<port>/<path>` works.
