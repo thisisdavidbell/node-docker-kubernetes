@@ -41,6 +41,7 @@ Note:
 * Build the docker image: `docker build -t <name> .`
   * Note: you can use this same command to rebuild the image if you make changes to the Dockerfile or node app.
 * Verify image exists: `docker images`
+  * Note: when creating the image we didn't specify a version, so it is shown as 'latest'
 * Run the docker image: `docker run -p 8081:8080 -d <name of image>`
   * Note for demonstration purposes we tell docker to make the app available externally on port 8081, linked to port 8080 on the docker container.
 * Confirm docker image running: `docker ps`
@@ -55,50 +56,63 @@ Note:
 * stop the docker container: `docker stop <container id>`
 * confirm it stopped: `docker ps`
 
-### 3. run node app using kubernetes with MiniKube
-Note: this creats a single pod containing a single container - the node app running in docker.
-* install homebrew: https://brew.sh/
-* install MiniKube: Follow steps in section 'Create a Minikube cluster' here: https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/
-NOTE: if youhave VirtualBox installed already, you may be able to skip the xhyve steps and just use 'minikube start'
+### 3. Run the node app using kubernetes with MiniKube
+Note: this creates a single pod containing a single container. The container is the running node docker image.
+* Install homebrew: https://brew.sh/
+* Install MiniKube: Follow steps in section 'Create a Minikube cluster' here: https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/
+NOTE: if you have VirtualBox installed already, you may be able to skip the xhyve steps and just use 'minikube start'
+* You should have run `minikube start`. Confirm minikube is running with: `kubectl cluster-info`
+* Tell you system to use the docker in minikube: `eval $(minikube docker-env)`
+  * Note, this can be undone later with: `eval $(minikube docker-env -u)`
+  * Confirm that `docker images` now does not show your node image you created in the previous section.
 * Recreate your docker image of your node app, using the docker in minikube:
-```
-eval $(minikube docker-env)
-docker build -t hello-node:v1 .
-```
-* run a deployment: `kubectl run hello-node --image=hello-node:v1 --port=8080
-`
+`docker build -t hello-node:v1 .`
+  * Note: we have chosen to specify a version for the image this time.
+* Verify the new image exists: `docker images`
+* Run a deployment: `kubectl run <deployment name> --image=<docker image name:version> --port=8080`
+  * This creates a pod, containing 1 container - the running node docker image
+  * Note: the port is the port exposed by the image
 * view deployments: `kubectl get deployments`
 * view pods: `kubectl get pods`
 * view cluster events: `kubectl get events`
-* view config: `kubectl config view`
+<!--  * view config: `kubectl config view` -->
+* Note that the app is of course not accessible outside the docker container. `curl locahost:8080/hello` fails as expected
+* Note, in fact local host will never work as the pod/containers are running inside the Kubernetes cluster virtual network
 
-* create a service to expose port outside of cluster: `kubectl expose deployment hello-node --type=LoadBalancer`
+* Create a service to expose port outside of cluster: `kubectl expose deployment <deployment name> --type=LoadBalancer`
 
-Note, the eval can be undone later with: `eval $(minikube docker-env -u).`
+* View service details: `kubectl get service <deployment name>`
 
-* view running app: `kubectl service hello-node` and add `/hello` to URL
-* alternatively:
-  * find ip from from: `kubectl ip`
-  * find external port from : `kubectl get services`
-  * open browser at: `ip:port/hello`
+* Test the deployed app:
+To do this, you will need the external ip address of the minikube cluster, and the service port. (On cloud providers that support load balancers, an external IP address would be provisioned to access the Service. On Minikube, the LoadBalancer type makes the Service accessible through the minikube service command, or you can use the Minikube cluster ip).
+  * find minikube cluster ip from: `minikube ip`
+  * find external port from : `kubectl get services`. Note under PORT(S) you can see the apps port and the port it has been made available under, e.g/ 8080/30956.
+  * Test the app: `curl ip:port/hello`
+  *  Alternatively, to test the app, you can just use `minikube service <service name>`, which opens a browser with the url in, and then add `/hello` to the url.
 
-* Remove deployment and exposed port:
-  * `kubectl get deployments`
+* Remove deployment and service (i.e. the exposed port):
+
   * `kubectl get services`
-  * `kubectl delete deployment hello-node`
   * `kubectl delete service hello-node`
-  * `kubectl get deployments`
   * `kubectl get services`
 
+  * `kubectl get deployments`
+  * `kubectl delete deployment hello-node`
+  * `kubectl get deployments`
 
 ### 4. Run two containers in the one pods
-* create a yaml file describing the deployment: see https://github.com/thisisdavidbell/node-docker-kubernetes/blob/master/hello-deployment.yaml
-* create deployment from yaml: `kubectl create -f hello-deployment.yaml`
-* expose app with external port: `kubectl expose deployment hello-node --type=LoadBalancer`
-* confirm app running: `kubectl service hello-node` and add `/hello` to URL
+* Create and run the same deployment as above from a file instead of specifying details on the command line
+  * create a yaml file describing the deployment: see [hello-deployment.yaml](hello-deployment.yaml), changing the image name and versionto match your docker image.
+    * Note: in the example file, we have chosen to specify 2 replicas.
+  * create deployment from yaml: `kubectl create -f hello-deployment.yaml`
+  * expose app with external port: `kubectl expose deployment hello-node --type=LoadBalancer`
+  * confirm app running: `kubectl service hello-node` and add `/hello` to URL
 
-* create a second node app to run in same pod in new dir
-  * create Dockerfile for this app
+* Create and deploy a second node app in same pod. The new node app calls the first ndoe app - the hello app.
+Note: communication between containers can be done on localhost, as containers in a pod share networking, or using a volume - shared disk space. Here we use localhost networking.
+  * create a new directory to contain the new app and associated docker files: see [/app2](/app2)`
+  * create node app which calls the hello app on localhost:8080/hello: see `app2-invoke.js`
+  * create Dockerfile for this app: see [app2/Dockerfile](app2/Dockerfile)
   * create docker image
   * create new deployment and service just for this app to demo it works correctly in isolation
 
@@ -113,7 +127,7 @@ Note, the eval can be undone later with: `eval $(minikube docker-env -u).`
 
 ### 5. Communication between containers in the same pod
 Note: as the containers run with the same ip address, we can use localhost to communicate between them.
-* create new version of app2.js which calls localhost:8080/hello: see `app2-invoke.js`
+
 * add new command to package.json to kickoff new app: `package.json`
 * build new Dockerfile using this command: `Dockerfile-invoke`
 * build v2 docker image of app2.js: `docker build --file Dockerfile-invoke -t app2-node:v2 .`
