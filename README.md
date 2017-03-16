@@ -125,9 +125,12 @@ Note: communication between containers can be done on localhost, as containers i
 * test with curl:
   * `curl <minikube cluster ip:service port/hello>`
   * `curl <minikube cluster ip:service port/app2-invoke>`
+  * *Note*: We created 2 replicas for the pod. Call an API multiple times, and you see that the ip address of the server varies between the 2 pods ip addresses.
   * Alternatively test with `minikube service <service name>` and add `/hello` and `/app2-invoke`.
   * *Note*: If you used the example node apps which print ip and port, note that the two containers share the same internal ip address, as they run in the same pod.
-
+* View Dashboard: `minikube dashboard`
+  * Note: this command opens the Kubernetes dashboard for the Minikube cluster.
+  
 ### Debugging
 Some debugging options:
 * Docker image
