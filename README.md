@@ -168,10 +168,10 @@ wordpress/
 ```
 
 * At a minimum, we therefore need:
- * Chart.yaml, see: [helm-chart-multi-container](helm-chart-multi-container/Chart.yaml)
+ * Chart.yaml, see: [helm-chart-multi-container/Chart.yaml](helm-chart-multi-container/Chart.yaml)
  * values.yaml [helm-chart-multi-container/values.yaml](helm-chart-multi-container/values.yaml)
- * templates/thedeploymentyaml.yaml, see: [helm-chart-multi-container/heml-template-multi-container-deployment.yaml](helm-chart-multi-container/helm-template-multi-container-deployment.yaml)
- *  * templates/theserviceyaml.yaml, see which we created for the first time to use helm instead of cmdline for creation of service: [helm-chart-multi-container/heml-template-multi-container-service.yaml](helm-chart-multi-container-template-multi-container-service.yaml)
+ * templates/thedeploymentyaml.yaml, see: [helm-chart-multi-container/templates/heml-template-multi-container-deployment.yaml](helm-chart-multi-container/templates/helm-template-multi-container-deployment.yaml)
+ *  templates/theserviceyaml.yaml, see which we created for the first time to use helm instead of cmdline for creation of service: [helm-chart-multi-container/templates/heml-template-multi-container-service.yaml](helm-chart-multi-container/templates/helm-template-multi-container-service.yaml)
 These exist already in this repo, or you can create your own.
 
 Note the values.yaml can be used for any part of the Kubernetes yaml files.
