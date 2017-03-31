@@ -174,7 +174,10 @@ wordpress/
  *  templates/theserviceyaml.yaml, see which we created for the first time to use helm instead of cmdline for creation of service: [helm-chart-multi-container/templates/heml-template-multi-container-service.yaml](helm-chart-multi-container/templates/helm-template-multi-container-service.yaml)
 These exist already in this repo, or you can create your own.
 
-Note the values.yaml can be used for any part of the Kubernetes yaml files.
+The basic principle is to take working Kubernetes yaml files (for example defining a deployment or service, that would be used with kubectl create -f <file.yaml> ), and specify where in these files you want to insert variables, and then use values.yaml to specify what those values are.
+
+A useful example here is specifying the port once for the deployment and the service, by making it a variable in values.yaml.
+
 
 * Run helm to launch the deployment and service: `helm install helm-chart-multi-container --name helm-chart-multi-container-release`
   * NOTE: use `--replace` flag to reuse the name. Name is preserved so that `helm status helm-chart-multi-container-release` returns information even after delete.
