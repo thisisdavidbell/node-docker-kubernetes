@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: help-multi-containers-deployment
+spec:
+  replicas: {{.Values.numReplicas}}
+  template:
+    metadata:
+      labels:
+        app: label-helm-multi-containers-deployment
+    spec:
+      containers:
+      - name: hello-node-container
+        image: hello-node-kube-docker-image:v1
+        ports:
+        - containerPort: {{.Values.helloPort}}
+      - name: app2-invoke-container
+        image: app2-invoke-docker-image:v1
+        ports:
+        - containerPort: {{.Values.app2Port}}

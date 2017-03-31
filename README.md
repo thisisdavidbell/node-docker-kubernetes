@@ -1,4 +1,4 @@
-# Tutorial: node-docker-kubernetes
+# Tutorial: Node, Docker, Kubernetes and Helm
 This tutorial provides a guided introduction to using docker and kubernetes, using a simple node application as an example.
 
 It covers the following capabilities:
@@ -126,7 +126,7 @@ Note: communication between containers can be done on localhost, as containers i
 * View Dashboard: `minikube dashboard`
   * Note: this command opens the Kubernetes dashboard for the Minikube cluster.
 
-### Healthcheck demonstration
+### 5. Healthcheck demonstration
 
 By default kubernetes monitors pods, and restarts them if needed. Using 2 terminal windows follow these steps to confirm this:
 * In terminal window 1, call the externally exposed load balancera number of times to confirm the hello app is running and being balanced across both ips: `curl <minikube cluster ip>:<hello app exposed port>/hello`. You should see the reponse coming from 2 different ips.
@@ -141,6 +141,44 @@ By default kubernetes monitors pods, and restarts them if needed. Using 2 termin
 * Note: you can see exactly the same if you cal the load balanced app2-invoke API. The entire pod is recovered, so you won't find you are calling the app2-invoke API which is trying to talk to the broken hello API.
 * Refresh the Dashboard page and the restart count for the killed pod will be incremented by 1.
 The system has auto recovered with no additional work from you!
+
+### 6 Adding helm
+
+In this section we create a Helm chart to manage the deployment created above.
+
+#### Installing Helm
+* Followed documentation here: https://github.com/kubernetes/helm
+* However, the tiller pod and replica set didn't start up. Pod and ReplicaSet logs in Dahsboard showed a cert issue. Ran command from here: https://github.com/kubernetes/helm/issues/2064
+  `minikube addons enable registry-creds`
+The restarted minikube: `minikube stop; minikube start`
+
+#### Creating a chart
+
+* Using documentation at: https://github.com/kubernetes/helm/blob/master/docs/charts.md which shows a basic structure of:
+```
+wordpress/
+  Chart.yaml          # A YAML file containing information about the chart
+  LICENSE             # OPTIONAL: A plain text file containing the license for the chart
+  README.md           # OPTIONAL: A human-readable README file
+  values.yaml         # The default configuration values for this chart
+  charts/             # OPTIONAL: A directory containing any charts upon which this chart depends.
+  templates/          # OPTIONAL: A directory of templates that, when combined with values,
+                      # will generate valid Kubernetes manifest files.
+  templates/NOTES.txt # OPTIONAL: A plain text file containing short usage notes
+```
+
+* At a minimum, we therefore need:
+ * Chart.yaml, see: [helm-chart-multi-container](helm-chart-multi-container/Chart.yaml)
+ * values.yaml [helm-chart-multi-container/values.yaml](helm-chart-multi-container/values.yaml)
+ * templates/thedeploymentyaml.yaml, see: [helm-chart-multi-container/heml-template-multi-container-deployment.yaml](helm-chart-multi-container/helm-template-multi-container-deployment.yaml)
+ *  * templates/theserviceyaml.yaml, see which we created for the first time to use helm instead of cmdline for creation of service: [helm-chart-multi-container/heml-template-multi-container-service.yaml](helm-chart-multi-container-template-multi-container-service.yaml)
+These exist already in this repo, or you can create your own.
+
+Note the values.yaml can be used for any part of the Kubernetes yaml files.
+
+* Run helm to launch the deployment and service: `helm install helm-chart-multi-container --name helm-chart-multi-container-release`
+  * NOTE: use `--replace` flag to reuse the name. Name is preserved so that `helm status helm-chart-multi-container-release` returns information even after delete.
+
 
 ### Debugging issues
 Some debugging options:
