@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: hello-container
-        image: hello:v1
+        image: hello:v2
         ports:
         - containerPort: {{.Values.helloPort}}
       - name: app2-container

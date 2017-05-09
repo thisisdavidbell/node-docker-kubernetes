@@ -178,9 +178,17 @@ The basic principle is to take working Kubernetes yaml files (for example defini
 
 A useful example here is specifying the port once for the deployment and the service, by making it a variable in values.yaml.
 
-
+#### Install using Helm
 * Run helm to launch the deployment and service: `helm install helm-chart-multi-container --name helm-chart-multi-container-release`
   * NOTE: use `--replace` flag to reuse the name. Name is preserved so that `helm status helm-chart-multi-container-release` returns information even after delete.
+
+#### Update using helm
+* update hello.js and build a new docker container hello:v2
+* Run helm to update the deployment and service using a second helm chart, which points at the second helm chart: `helm upgrade helm-chart-multi-container-release helm-chart-multi-container-2`
+
+#### Rollback using helm
+* View history: `helm history helm-chart-multi-container-release`
+* Roll back to a specific revision: `helm rollback helm-chart-multi-container-release 20`
 
 
 ### Debugging issues

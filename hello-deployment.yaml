@@ -1,7 +1,7 @@
-apiVersion: extensions/v1beta1
+apiVersion: imaversionindeployentyaml
 kind: Deployment
 metadata:
-  name: hello-node-from-yaml
+  name: hello-node-name-from-yaml
 spec:
   replicas: 2
   template:

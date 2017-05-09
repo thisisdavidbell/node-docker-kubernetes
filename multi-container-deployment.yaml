@@ -10,11 +10,11 @@ spec:
         app: multi-containers-deployment
     spec:
       containers:
-      - name: hello-node-container
-        image: hello-node-kube-docker-image:v1
+      - name: hello-container
+        image: hello:v1
         ports:
         - containerPort: 8080
-      - name: app2-invoke-container
-        image: app2-invoke-docker-image:v1
+      - name: app2-container
+        image: app2:v1
         ports:
         - containerPort: 8081
