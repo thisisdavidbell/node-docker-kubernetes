@@ -215,13 +215,19 @@ bx plugin list
 
 * Gain local access to your cluster
 Log in to your Bluemix account.
-`bx login -a https://api.ng.bluemix.net`
+```
+bx login -a https://api.ng.bluemix.net
+```
 
 * Initialize the IBM Bluemix Container Service plug-in.
-`bx cs init`
+```
+bx cs init
+```
 
 * Set your terminal context to your cluster.
-`bx cs cluster-config drbcluster`
+```
+bx cs cluster-config drbcluster
+```
 
 * In the output, the path to your configuration file is displayed as a command to set an environment variable, for example:
 ```
@@ -234,36 +240,53 @@ bx cs clusters
 ```
 
 * Verify your worker nodes by running some Kubernetes commands.
-`kubectl get nodes`
+```
+kubectl get nodes
+```
 
 * Access your Kubernetes dashboard.
-`kubectl proxy`
-Use http://127.0.0.1:8001/ui to view your Kubernetes dashboard.
+```
+kubectl proxy
+```Use http://127.0.0.1:8001/ui to view your Kubernetes dashboard.
 
 #### Create private container registry and push images
 * Install the Bluemix Containers Plugin
-`bluemix plugin install IBM-Containers -r Bluemix`
+```
+bluemix plugin install IBM-Containers -r Bluemix
+```
 
 * Log in to Bluemix API
-`bluemix login -a https://api.eu-gb.bluemix.net`
+```
+bluemix login -a https://api.eu-gb.bluemix.net
+```
 
 * Initialize containers plug-in
-`bluemix ic init`
+```
+bluemix ic init
+```
 
 * Find namespace (which is your registryname)
-`bx cr namespaces`
+```
+bx cr namespaces
+```
 
 * Tag the image with your private namespace in the IBM Containers Registry
-`docker tag image_id registry.eu-gb.bluemix.net/<namespace>/image_name:image_tag`
+```
+docker tag image_id registry.eu-gb.bluemix.net/<namespace>/image_name:image_tag
+```
 
 * Push this image to the IBM Containers Registry
-`docker push registry.eu-gb.bluemix.net/<namespace>/image_name:image_tag`
+```
+docker push registry.eu-gb.bluemix.net/<namespace>/image_name:image_tag
+```
 
 #### Create new deployment yaml with new images names/locations
 * see [kube-multi-container-deployment.yaml](kube-multi-container-deployment.yaml)
 
 #### Deploy Deployment to kubernetes in Bluemix
-`kubectl create -f kube-multi-container-deployment.yaml`
+```
+kubectl create -f kube-multi-container-deployment.yaml
+```
 
 #### Configure Service to expose container ports
 ```
