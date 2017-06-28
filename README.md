@@ -196,6 +196,69 @@ Some debugging options:
 * Docker image
   * create an instance of the docker image using `docker run` and use `docker exec` to log into the image and check the file system looks as expected, `ps -ef` shows the expected commands, and `curl localhost:<port>/<path>` works.
 
+## Pushing deployment to Kubernetes in bluemix
+
+### Create Kubernetes cluster in Bluemix and install plugins
+
+* Create Kubernetes cluster in Bluemix UI
+
+* Configure it:
+Instructions from Bluemix cluster:
+
+To gain access to your cluster, download and install a few CLI tools and the IBM Bluemix Container Service plug-in.
+* Bluemix  - https://clis.ng.bluemix.net/
+* Kubernetes CLI - https://kubernetes.io/docs/user-guide/prereqs/
+
+* Install Bluemix Container Service
+`bx plugin install container-service -r Bluemix`
+`bx plugin list`
+
+* Gain access to your cluster
+Log in to your Bluemix account.
+`bx login -a https://api.ng.bluemix.net`
+
+* Initialize the IBM Bluemix Container Service plug-in.
+`bx cs init`
+
+* Set your terminal context to your cluster.
+`bx cs cluster-config drbcluster`
+
+In the output, the path to your configuration file is displayed as a command to set an environment variable, for example:
+export KUBECONFIG=/Users/ibm/.bluemix/plugins/container-service/clusters/drbcluster/kube-config-prod-hou02-drbcluster.yml
+Copy and paste the command to set the environment variable in your terminal and press Enter.
+
+* Verify your worker nodes by running some Kubernetes commands.
+`kubectl get nodes`
+
+* Access your Kubernetes dashboard.
+`kubectl proxy`
+Use http://127.0.0.1:8001/ui to view your Kubernetes dashboard.
+
+### Create private container registry and push images
+* Install the Bluemix Containers Plugin
+`bluemix plugin install IBM-Containers -r Bluemix`
+
+* Log in to Bluemix API
+`bluemix login -a https://api.eu-gb.bluemix.net`
+
+* Initialize containers plug-in
+`bluemix ic init`
+
+* Find namespace (which is your registryname)
+`bx cr namespaces`
+
+* Tag the image with your private namespace in the IBM Containers Registry
+`docker tag image_id registry.eu-gb.bluemix.net/<namespace>/image_name:image_tag`
+
+* Push this image to the IBM Containers Registry
+`docker push registry.eu-gb.bluemix.net/<namespace>/image_name:image_tag`
+
+### Create new deployment yaml with new images names/locations
+* see [kube-multi-container-deployment.yaml](kube-multi-container-deployment.yaml)
+
+### Deploy Deployment to kubernetes in Bluemix
+`kubectl create -f kube-multi-container-deployment.yaml`
+
 ## Useful resources:
 This tutorial was built up using knowledge acquired by following these tutorials:
 * Dockerise a node app: https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
