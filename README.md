@@ -15,13 +15,13 @@ Note:
 * These instructions were written and tested on OS X.
 * All installation requirements should be mentioned where needed.
 
-### 1. Create node app
+## Create node app
 
 * Install node.js
 * Create a simple node application, for example that returns 'Hello' on port 8080 using express: See: [hello.js](hello.js)
 * Ensure you create a package.json with dependencies and a 'start' script. See: [package.json](package.json)
 
-### 2. Create Docker image
+## Create Docker image
 *NOTE*: While this image will not be used in the Kubernetes part of this tutorial, it is useful to create and use a docker container as a learning exercise.
 * Install [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
 * Create a Dockerfile. See: [Dockerfile](Dockerfile)
@@ -51,7 +51,7 @@ Note:
 * stop the docker container: `docker stop <container id>`
 * confirm it stopped: `docker ps`
 
-### 3. Run the node app using kubernetes with MiniKube
+## Run the node app using kubernetes with MiniKube
 Note: this creates a single pod containing a single container. The container is the running node docker image.
 * Install homebrew: https://brew.sh/
 * Install MiniKube: Follow steps in section 'Create a Minikube cluster' here: https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/
@@ -95,7 +95,7 @@ To do this, you will need the external ip address of the minikube cluster, and t
   * `kubectl delete deployment <deployment name>`
   * `kubectl get deployments`
 
-### 4. Run two containers in the one pods
+## Run two containers in the one pods
 * Create and run the same deployment as above from a file instead of specifying details on the command line
   * create a yaml file describing the deployment: see [hello-deployment.yaml](hello-deployment.yaml), changing the image name and versionto match your docker image.
     * Note: in the example file, we have chosen to specify 2 replicas.
@@ -126,7 +126,7 @@ Note: communication between containers can be done on localhost, as containers i
 * View Dashboard: `minikube dashboard`
   * Note: this command opens the Kubernetes dashboard for the Minikube cluster.
 
-### 5. Healthcheck demonstration
+## Healthcheck demonstration
 
 By default kubernetes monitors pods, and restarts them if needed. Using 2 terminal windows follow these steps to confirm this:
 * In terminal window 1, call the externally exposed load balancera number of times to confirm the hello app is running and being balanced across both ips: `curl <minikube cluster ip>:<hello app exposed port>/hello`. You should see the reponse coming from 2 different ips.
@@ -142,7 +142,7 @@ By default kubernetes monitors pods, and restarts them if needed. Using 2 termin
 * Refresh the Dashboard page and the restart count for the killed pod will be incremented by 1.
 The system has auto recovered with no additional work from you!
 
-### 6 Adding helm
+## Adding helm
 
 In this section we create a Helm chart to manage the deployment created above.
 
@@ -198,22 +198,22 @@ Some debugging options:
 
 ## Pushing deployment to Kubernetes in bluemix
 
-### Create Kubernetes cluster in Bluemix and install plugins
+#### Create Kubernetes cluster in Bluemix and install plugins
 
-* Create Kubernetes cluster in Bluemix UI
+* Create Kubernetes cluster in Bluemix UI (or using cli)
 
-* Configure it:
-Instructions from Bluemix cluster:
-
+* Configure it CLI
 To gain access to your cluster, download and install a few CLI tools and the IBM Bluemix Container Service plug-in.
 * Bluemix  - https://clis.ng.bluemix.net/
 * Kubernetes CLI - https://kubernetes.io/docs/user-guide/prereqs/
 
 * Install Bluemix Container Service
-`bx plugin install container-service -r Bluemix`
-`bx plugin list`
+```
+bx plugin install container-service -r Bluemix
+bx plugin list
+```
 
-* Gain access to your cluster
+* Gain local access to your cluster
 Log in to your Bluemix account.
 `bx login -a https://api.ng.bluemix.net`
 
@@ -223,9 +223,15 @@ Log in to your Bluemix account.
 * Set your terminal context to your cluster.
 `bx cs cluster-config drbcluster`
 
-In the output, the path to your configuration file is displayed as a command to set an environment variable, for example:
+* In the output, the path to your configuration file is displayed as a command to set an environment variable, for example:
+```
 export KUBECONFIG=/Users/ibm/.bluemix/plugins/container-service/clusters/drbcluster/kube-config-prod-hou02-drbcluster.yml
-Copy and paste the command to set the environment variable in your terminal and press Enter.
+```
+
+* verify your cluster exists and is up
+```
+bx cs clusters
+```
 
 * Verify your worker nodes by running some Kubernetes commands.
 `kubectl get nodes`
@@ -234,7 +240,7 @@ Copy and paste the command to set the environment variable in your terminal and 
 `kubectl proxy`
 Use http://127.0.0.1:8001/ui to view your Kubernetes dashboard.
 
-### Create private container registry and push images
+#### Create private container registry and push images
 * Install the Bluemix Containers Plugin
 `bluemix plugin install IBM-Containers -r Bluemix`
 
@@ -253,13 +259,48 @@ Use http://127.0.0.1:8001/ui to view your Kubernetes dashboard.
 * Push this image to the IBM Containers Registry
 `docker push registry.eu-gb.bluemix.net/<namespace>/image_name:image_tag`
 
-### Create new deployment yaml with new images names/locations
+#### Create new deployment yaml with new images names/locations
 * see [kube-multi-container-deployment.yaml](kube-multi-container-deployment.yaml)
 
-### Deploy Deployment to kubernetes in Bluemix
+#### Deploy Deployment to kubernetes in Bluemix
 `kubectl create -f kube-multi-container-deployment.yaml`
+
+#### Configure Service to expose container ports
+```
+kubectl expose deployment multi-containers-deployment --type=LoadBalancer --name=multi-containers-service
+```
+Note, could instead have created a yaml file and use `kubectl create -f thefile.yaml`
+
+#### test service is up
+* view dashboard
+```
+kubectl proxy &
+```
+Open displayed url: i.e. locahost:8001/ui
+
+* Alternatively view on the cli
+```
+kubectl get deployments
+kubectl get pods
+```
+
+#### Test deployments
+NOTE: free accounts do not include ingress, so you cannot expose an external port. Instead we can use port forwarding:
+
+* set port forwarding for a pod
+Find the pod name.
+```
+kubectl port-forward multi-containers-deployment-1832379792-fdxfv 8881:8081
+```
+This exposes the port 8081 which the container exposes, and makes it available externally on port 8881
+
+* Test the api
+```
+curl 127.0.0.1:8881/app2-invoke
+```
 
 ## Useful resources:
 This tutorial was built up using knowledge acquired by following these tutorials:
 * Dockerise a node app: https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
 * Minikube intro: https://kubernetes.io/docs/tutorials/stateless-application/hello-minikube/
+* Bluemix Kubernetes documentation: https://console.bluemix.net/docs/containers/container_index.html
