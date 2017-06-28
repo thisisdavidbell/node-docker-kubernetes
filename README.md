@@ -196,18 +196,19 @@ Some debugging options:
 * Docker image
   * create an instance of the docker image using `docker run` and use `docker exec` to log into the image and check the file system looks as expected, `ps -ef` shows the expected commands, and `curl localhost:<port>/<path>` works.
 
-## Pushing deployment to Kubernetes in bluemix
+## Push deployment to Kubernetes in bluemix
 
 #### Create Kubernetes cluster in Bluemix and install plugins
 
 * Create Kubernetes cluster in Bluemix UI (or using cli)
 
-* Configure it CLI
+* Configure CLI
 To gain access to your cluster, download and install a few CLI tools and the IBM Bluemix Container Service plug-in.
 * Bluemix  - https://clis.ng.bluemix.net/
 * Kubernetes CLI - https://kubernetes.io/docs/user-guide/prereqs/
 
 * Install Bluemix Container Service
+This allows creation and management of kubernetes clusters in Bluemix
 ```
 bx plugin install container-service -r Bluemix
 bx plugin list
@@ -224,7 +225,7 @@ bx login -a https://api.ng.bluemix.net
 bx cs init
 ```
 
-* Set your terminal context to your cluster.
+* Set your terminal context to point at your cluster.
 ```
 bx cs cluster-config drbcluster
 ```
@@ -233,6 +234,12 @@ bx cs cluster-config drbcluster
 ```
 export KUBECONFIG=/Users/ibm/.bluemix/plugins/container-service/clusters/drbcluster/kube-config-prod-hou02-drbcluster.yml
 ```
+
+* Verify the CLI can talk to the cluster
+```
+kubectl version  --short
+```
+The output should show local client and server version
 
 * verify your cluster exists and is up
 ```
@@ -249,23 +256,22 @@ kubectl get nodes
 kubectl proxy
 ```Use http://127.0.0.1:8001/ui to view your Kubernetes dashboard.
 
-#### Create private container registry and push images
-* Install the Bluemix Containers Plugin
+#### Push images to private Bluemix Docker registry
+* If you have a bluemix account, it seems you can push images already. You just need a namespace, which you may get by default. (can create alternative using `bx cr namespace-add <my_namespace>` if needed.)
+
+* Install Container Registry plugin
+This provides a CLI to manage and push images to the Bluemix Container Registry
 ```
-bluemix plugin install IBM-Containers -r Bluemix
+bx plugin install container-registry -r Bluemix
 ```
 
 * Log in to Bluemix API
 ```
-bluemix login -a https://api.eu-gb.bluemix.net
+bluemix login
 ```
+You many need to also log into the Container Registry: `bx cr login`
 
-* Initialize containers plug-in
-```
-bluemix ic init
-```
-
-* Find namespace (which is your registryname)
+* Find your namespace(s)
 ```
 bx cr namespaces
 ```
