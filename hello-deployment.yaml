@@ -1,4 +1,4 @@
-apiVersion: imaversionindeployentyaml
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: hello-node-name-from-yaml
