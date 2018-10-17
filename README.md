@@ -34,7 +34,8 @@ Note:
     * specify the command (CMD) that kicks off the application on this container
 * create .dockerignore, specifying any local files not required in the container. See: [.dockerignore](.dockerignore)
 * Build the docker image: `docker build -t <name> .`
-  * Note: you can use this same command to rebuild the image if you make changes to the Dockerfile or node app.
+  Select a name of your choice. You can use this same command to rebuild the image if you make changes to the Dockerfile or node app.
+  * Note: the . is part of the command
 * Verify image exists: `docker images`
   * Note: when creating the image we didn't specify a version, so it is shown as 'latest'
 * Run the docker image: `docker run -p 8081:8080 -d <name of image>`
@@ -61,11 +62,11 @@ NOTE: if you have VirtualBox installed already, you may be able to skip the xhyv
   * Note, this can be undone later with: `eval $(minikube docker-env -u)`
   * Confirm that `docker images` now does not show your node image you created in the previous section.
 * Recreate your docker image of your node app, using the docker in minikube:
-`docker build -t hello-node:v1 .`
-  * Note: we have chosen to specify a version for the image this time.
+`docker build -t <name>:<version> .` Again, choose your own name for the image, and the . is part of the command.
+  * Note: we have chosen to specify a version for the image this time, for example, v1.
 * Verify the new image exists: `docker images`
-* Run a deployment: `kubectl run <deployment name> --image=<docker image name:version> --port=8080`
-  * This creates a pod, containing 1 container - the running node docker image
+* Run a deployment: `kubectl run <deployment name> --image=<name>:<version> --port=8080`
+  * Choose your own `<deployment name>`. This creates a pod, containing 1 container - the running node docker image. Use the `<name>:<version>` you specified in the docker build command in the previous step.
   * Note: the port is the port exposed by the image
 * view deployments: `kubectl get deployments`
 * view pods: `kubectl get pods`
@@ -102,7 +103,7 @@ To do this, you will need the external ip address of the minikube cluster, and t
   * create deployment from yaml: `kubectl create -f hello-deployment.yaml`
   * expose app with external port: `kubectl expose deployment <deployment name> --type=LoadBalancer`
     * Note: the deployment name is specified in the yaml file
-  * confirm app running: `kubectl service hello-node` and add `/hello` to URL
+  * confirm app running: `minikube service hello-node` and add `/hello` to URL
 
 * Create and deploy a second node app in same pod. The new node app calls the first node app - the hello app.
 Note: communication between containers can be done on localhost, as containers in a pod share networking, or using a volume - shared disk space. Here we use localhost networking.
@@ -254,7 +255,8 @@ kubectl get nodes
 * Access your Kubernetes dashboard.
 ```
 kubectl proxy
-```Use http://127.0.0.1:8001/ui to view your Kubernetes dashboard.
+```
+Use http://127.0.0.1:8001/ui to view your Kubernetes dashboard.
 
 #### Push images to private Bluemix Docker registry
 * If you have a bluemix account, it seems you can push images already. You just need a namespace, which you may get by default. (can create alternative using `bx cr namespace-add <my_namespace>` if needed.)
